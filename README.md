@@ -56,7 +56,8 @@ Then tweak in plain words: "make the green our brand blue", "use these keywords 
 2. Bump the version in three places: `plugins/motion-studio/.claude-plugin/plugin.json`,
    `.claude-plugin/marketplace.json`, and the `Version` line at the top of `SKILL.md`.
 3. Add a section at the top of `CHANGELOG.md`.
-4. `git tag v1.1.0 && git push --tags`. GitHub Actions builds the zip and publishes the Release with those notes.
+4. Commit and push, then on GitHub: **Releases → Draft a new release**, tag `v1.1.0`, **Publish**.
+   GitHub Actions attaches the zip and fills the notes from the changelog (it fails loudly if the three version numbers don't match the tag).
 
 ## Layout
 ```
