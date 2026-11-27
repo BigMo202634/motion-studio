@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Real estate talking head (overlay)</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<!--
+  OVERLAY TEMPLATE for real footage. Render with:
+    node scripts/render.mjs examples/realestate-talking-head.html --background talking.mp4 [--music track.mp3]
+  Captions: python3 scripts/transcribe.py talking.mp4 words.js   (then keep <script src="words.js">)
+  Edit only the LISTING / AGENT / MOMENTS block below; everything else follows from it.
+-->
+<style>
+  :root {
+    --accent: #E8C872; --accent-ink: #1A1408; --ink: #FFFFFF; --dark: rgba(14,14,16,.82);
+    --display: "Instrument Serif", Georgia, serif; --text: "Plus Jakarta Sans", "Inter", Arial, sans-serif;
+    --cap: "Montserrat", "Inter", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #111; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: var(--ink); font-family: var(--text); }
+  .abs { position: absolute; }
+  #bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shade-top { left: 0; right: 0; top: 0; height: 520px; background: linear-gradient(180deg, rgba(0,0,0,.55), transparent); }
+  .shade-bot { left: 0; right: 0; bottom: 0; height: 1100px; background: linear-gradient(0deg, rgba(0,0,0,.7), transparent); }
+
+  /* hook */
+  .stamp { display: inline-block; padding: 14px 28px; border: 4px solid var(--accent); color: var(--accent); font: 800 40px/1 var(--text); letter-spacing: .18em; border-radius: 10px; }
+  .hook { font: 400 108px/1 var(--display); letter-spacing: -0.01em; text-shadow: 0 6px 30px rgba(0,0,0,.45); }
+  .hook i { color: var(--accent); }
+
+  /* agent lower third */
+  .agent { display: flex; align-items: center; gap: 22px; padding: 22px 34px 22px 22px; background: var(--dark); border-radius: 999px; backdrop-filter: blur(10px); }
+  .avatar { width: 84px; height: 84px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font: 800 34px/1 var(--text); }
+  .agent b { font: 800 38px/1.1 var(--text); display: block; }
+  .agent span { font: 500 26px/1.2 var(--text); color: #CFCFD4; }
+
+  /* captions */
+  #caps { left: 70px; right: 70px; top: 960px; height: 220px; }
+  .ms-cap { text-align: center; font: 900 76px/1.08 var(--cap); letter-spacing: -0.01em; text-transform: uppercase;
+    paint-order: stroke fill; -webkit-text-stroke: 10px rgba(0,0,0,.85); text-shadow: 0 8px 24px rgba(0,0,0,.5); }
+  .ms-w { display: inline-block; transition: none; }
+  .ms-w.now { color: var(--accent); }
+  .ms-w.em { color: var(--accent); }
+
+  /* photo card */
+  .photo { width: 860px; height: 600px; border-radius: 36px; overflow: hidden; box-shadow: 0 40px 80px -20px rgba(0,0,0,.6); border: 6px solid #fff; background: #333; }
+  .photo .img { position: absolute; inset: -40px; background-size: cover; background-position: center; }
+  .photo .label { left: 24px; bottom: 24px; padding: 12px 20px; border-radius: 14px; background: var(--dark); font: 700 28px/1 var(--text); }
+
+  /* price + specs */
+  .price { padding: 26px 40px; border-radius: 28px; background: var(--accent); color: var(--accent-ink); box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); }
+  .price small { display: block; font: 700 26px/1 var(--text); letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+  .price b { display: block; font: 800 92px/1.05 var(--text); letter-spacing: -0.03em; margin-top: 8px; }
+  .chip { display: inline-flex; align-items: center; gap: 12px; background: #fff; color: #111; border-radius: 999px; padding: 20px 30px; font: 800 36px/1 var(--text); box-shadow: 0 20px 40px -14px rgba(0,0,0,.5); }
+  .chip i { font-style: normal; color: #8A6D1E; }
+
+  /* map */
+  .map { width: 860px; height: 420px; border-radius: 36px; overflow: hidden; background: #EDEAE3; box-shadow: 0 40px 80px -20px rgba(0,0,0,.6); }
+  .road { position: absolute; background: #fff; }
+  .park { position: absolute; background: #CFE6C3; border-radius: 30px; }
+  .water { position: absolute; background: #BFD9EE; }
+  .pin { width: 70px; height: 70px; border-radius: 50% 50% 50% 0; background: #E2483D; rotate: -45deg; box-shadow: 0 10px 20px rgba(0,0,0,.3); }
+  .pin::after { content: ''; position: absolute; left: 22px; top: 22px; width: 26px; height: 26px; border-radius: 50%; background: #fff; }
+  .addr { left: 30px; bottom: 30px; right: 30px; padding: 22px 28px; background: #111; border-radius: 22px; }
+  .addr b { font: 800 34px/1.1 var(--text); display: block; }
+  .addr span { font: 500 26px/1.2 var(--text); color: #BDBDC4; }
+
+  /* cta */
+  .cta { padding: 30px 44px; background: #fff; color: #111; border-radius: 30px; text-align: center; box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); }
+  .cta b { font: 800 50px/1.1 var(--text); display: block; }
+  .cta b em { font-style: normal; background: var(--accent); padding: 0 14px; border-radius: 10px; }
+  .cta span { font: 600 30px/1.3 var(--text); color: #555; display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <video id="bg" class="preview-only" src="talking.mp4" playsinline></video>
+  <div class="abs shade-top" id="shadeT"></div>
+  <div class="abs shade-bot" id="shadeB"></div>
+
+  <div class="abs" id="hook" style="left:0; right:0; top:150px; text-align:center">
+    <div class="stamp" id="stamp">JUST LISTED</div>
+    <div class="hook" id="hookT" style="margin-top:34px"></div>
+  </div>
+
+  <div class="abs" id="agentBox" style="left:60px; top:1640px"><div class="agent"><div class="avatar" id="ini"></div><div><b id="aName"></b><span id="aRole"></span></div></div></div>
+
+  <div class="abs photo" id="ph1" style="left:110px; top:1190px"><div class="img" id="ph1i"></div><div class="abs label" id="ph1l"></div></div>
+  <div class="abs photo" id="ph2" style="left:110px; top:1190px"><div class="img" id="ph2i"></div><div class="abs label" id="ph2l"></div></div>
+  <div class="abs photo" id="ph3" style="left:110px; top:1190px"><div class="img" id="ph3i"></div><div class="abs label" id="ph3l"></div></div>
+
+  <div class="abs" id="priceBox" style="left:110px; top:1230px"><div class="price"><small>Listed at</small><b id="priceN">$0</b></div></div>
+  <div class="abs" id="specs" style="left:110px; top:1490px; display:flex; gap:18px; flex-wrap:wrap; width:880px"></div>
+
+  <div class="abs map" id="map" style="left:110px; top:1220px">
+    <div class="water" style="left:-40px; top:300px; width:960px; height:160px; rotate:-6deg"></div>
+    <div class="park" style="left:520px; top:40px; width:260px; height:150px"></div>
+    <div class="road" style="left:0; top:150px; width:860px; height:26px"></div>
+    <div class="road" style="left:300px; top:0; width:26px; height:420px"></div>
+    <div class="road" style="left:620px; top:0; width:18px; height:300px"></div>
+    <div class="road" style="left:0; top:250px; width:860px; height:14px; rotate:4deg"></div>
+    <div class="abs" id="pinW" style="left:395px; top:70px"><div class="pin"></div></div>
+    <div class="abs addr" id="addr" style="bottom:auto; top:290px"><b id="addrL1"></b><span id="addrL2"></span></div>
+  </div>
+
+  <div class="abs" id="caps"></div>
+
+  <div class="abs" id="ctaBox" style="left:90px; right:90px; top:1260px"><div class="cta"><b id="ctaT"></b><span id="ctaS"></span></div></div>
+</div>
+
+<script src="words.js" onerror="window.WORDS = window.WORDS || []"></script>
+<script src="../assets/motion.js"></script>
+<script>
+  /* ===================== EDIT THIS BLOCK ===================== */
+  const AGENT   = { name: 'Amara Cole', role: 'Realtor · Coastline Realty', initials: 'AC' };
+  const LISTING = {
+    hook: 'A <i>modern</i> 4-bed<br>by the water',
+    price: 1250000, currency: '$',
+    specs: [['4', 'Beds'], ['3', 'Baths'], ['2,450', 'sq ft'], ['2', 'Car garage']],
+    address: ['14 Harbor View Drive', 'Seaview Estate · 8 min to downtown'],
+    photos: [['house1.jpg', 'Open-plan living'], ['house2.jpg', 'Chef’s kitchen'], ['house3.jpg', 'Primary suite']],
+    cta: ['Comment <em>TOUR</em>', 'and I’ll send you the full walkthrough'],
+    emphasis: ['modern', 'kitchen', 'million', 'water', 'tour', 'view', 'garden', 'pool'],
+  };
+  // When each overlay appears (seconds into the footage). Line them up with what the agent is saying.
+  // Layout assumes a phone selfie: face in the upper half, so cards live in the lower half (y 1190–1790)
+  // and captions sit just under the chin (y 960). Move them if the face is elsewhere.
+  const MOMENTS = { hook: [0.1, 2.6], agent: [0.6, 4.6], price: [3.0, 6.0], specs: [4.0, 6.0], photos: [6.2, 8.2, 10.2], photoEnd: 12.0, map: [12.2, 15.0], cta: 15.2 };
+  /* =========================================================== */
+
+  MS.size(1080, 1920).fps(30).duration('auto');
+  MS.footage('#bg');
+  const $ = id => document.getElementById(id);
+  $('hookT').innerHTML = LISTING.hook;
+  $('aName').textContent = AGENT.name; $('aRole').textContent = AGENT.role; $('ini').textContent = AGENT.initials;
+  LISTING.specs.forEach(([n, l]) => { const c = document.createElement('div'); c.className = 'chip spec'; c.innerHTML = `${n} <i>${l}</i>`; $('specs').appendChild(c); });
+  $('addrL1').textContent = LISTING.address[0]; $('addrL2').textContent = LISTING.address[1];
+  LISTING.photos.forEach(([src, label], i) => { $(`ph${i + 1}i`).style.backgroundImage = `url("${src}")`; $(`ph${i + 1}l`).textContent = label; });
+  $('ctaT').innerHTML = LISTING.cta[0]; $('ctaS').textContent = LISTING.cta[1];
+
+  const outUp = (id, at) => MS.to(id, { opacity: 0, y: -40, blur: 8 }, at - .3, .3, 'in');
+
+  // legibility shades are always on
+  MS.fromTo(['#shadeT', '#shadeB'].map(s => document.querySelector(s)), { opacity: 0 }, { opacity: 1 }, 0, .4);
+
+  // ---- hook: stamp slams, headline rises ----
+  const [h0, h1] = MOMENTS.hook;
+  MS.fromTo('#stamp', { opacity: 0, scale: 2.4, rotate: -8 }, { opacity: 1, scale: 1, rotate: -4 }, h0, .4, 'expoOut');
+  MS.fromTo('#hookT', { opacity: 0, y: 70, blur: 14 }, { opacity: 1, y: 0, blur: 0 }, h0 + .25, .7, 'expoOut');
+  outUp('#hook', h1);
+  MS.cue(h0, 'impact/impact_quick_zoom', .8).cue(h0 + .2, 'whoosh/swoosh_quick_accent', .5);
+
+  // ---- agent lower third ----
+  const [a0, a1] = MOMENTS.agent;
+  MS.fromTo('#agentBox', { opacity: 0, x: -320 }, { opacity: 1, x: 0 }, a0, .7, 'expoOut');
+  MS.to('#agentBox', { opacity: 0, x: -320 }, a1 - .4, .4, 'in');
+  MS.cue(a0, 'whoosh/sweep_fast_air', .45);
+
+  // ---- price counter + specs ----
+  const [p0, p1] = MOMENTS.price;
+  MS.fromTo('#priceBox', { opacity: 0, y: 60, scale: .9 }, { opacity: 1, y: 0, scale: 1 }, p0, .55, 'backOut');
+  MS.count('#priceN', 0, LISTING.price, p0 + .15, 1.6, 'expoOut', v => LISTING.currency + Math.round(v).toLocaleString());
+  MS.countSound(p0 + .15, 1.6, 'expoOut', { ticks: 18, tick: 'counter/tick_checkbox', gain: .4, land: 'money/cash_register_kaching', landGain: .55 });
+  outUp('#priceBox', p1);
+  const [s0, s1] = MOMENTS.specs;
+  MS.stagger('#specs .spec', { opacity: 0, y: 40, scale: .8 }, { opacity: 1, y: 0, scale: 1 }, s0, .45, .14, 'backOut');
+  LISTING.specs.forEach((_, i) => MS.cue(s0 + i * .14, 'pop/pop_message', .35));
+  outUp('#specs', s1);
+
+  // ---- photo cards: slide in, slow Ken Burns, next one pushes it out ----
+  MOMENTS.photos.forEach((t, i) => {
+    const id = `#ph${i + 1}`, end = MOMENTS.photos[i + 1] ?? MOMENTS.photoEnd;
+    MS.fromTo(id, { opacity: 0, x: 900, rotate: 6 }, { opacity: 1, x: 0, rotate: i % 2 ? 2 : -2 }, t, .65, 'expoOut');
+    MS.fromTo(`${id}i`, { scale: 1.0, x: 0 }, { scale: 1.12, x: i % 2 ? 20 : -20 }, t, end - t + .6, 'linear');
+    MS.to(id, { opacity: 0, x: -900, rotate: -6 }, end - .05, .5, 'in');
+    MS.cue(t - .05, i === 0 ? 'whoosh/whoosh_cinematic_fast' : 'whoosh/swipe_quick', .5).cue(t + .4, 'camera/camera_shutter', .3);
+  });
+
+  // ---- map + pin drop ----
+  const [m0, m1] = MOMENTS.map;
+  MS.fromTo('#map', { opacity: 0, y: 80, scale: .92 }, { opacity: 1, y: 0, scale: 1 }, m0, .6, 'expoOut');
+  MS.fromTo('#pinW', { opacity: 0, y: -260 }, { opacity: 1, y: 0 }, m0 + .5, .55, 'backOut');
+  MS.fromTo('#addr', { opacity: 0, y: 30 }, { opacity: 1, y: 0 }, m0 + .8, .5, 'expoOut');
+  outUp('#map', m1);
+  MS.cue(m0, 'whoosh/swoosh_air', .45).cue(m0 + .95, 'pop/pop_hard_click', .5);
+
+  // ---- CTA ----
+  const c0 = MOMENTS.cta;
+  MS.fromTo('#ctaBox', { opacity: 0, y: 80, scale: .9 }, { opacity: 1, y: 0, scale: 1 }, c0, .6, 'backOut');
+  MS.to('#ctaBox', { scale: 1.04 }, c0 + 1.2, .15, 'out').to('#ctaBox', { scale: 1 }, c0 + 1.35, .4, 'backOut');
+  MS.cue(c0, 'whoosh/message_sent_swoosh', .5).cue(c0 + 1.2, 'alert/notification_040', .45);
+
+  // ---- captions from speech ----
+  MS.captions('#caps', window.WORDS, { maxWords: 3, emphasis: LISTING.emphasis, style: 'pop' });
+</script>
+</body>
+</html>

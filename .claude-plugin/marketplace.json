@@ -1,0 +1,13 @@
+{
+  "name": "bigmo-skills",
+  "owner": { "name": "BigMo" },
+  "metadata": { "description": "Claude skills by BigMo" },
+  "plugins": [
+    {
+      "name": "motion-studio",
+      "source": "./plugins/motion-studio",
+      "description": "Polished motion-graphics videos and real estate talking-head reels from one sentence: animation runtime, real sound effects, trending fonts, keyword captions behind the speaker.",
+      "version": "1.0.0"
+    }
+  ]
+}

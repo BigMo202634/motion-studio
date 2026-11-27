@@ -1,0 +1,9 @@
+{
+  "name": "motion-studio",
+  "version": "1.0.0",
+  "description": "Polished motion-graphics videos and real estate talking-head reels from one sentence: animation runtime, real sound effects, trending fonts, keyword captions behind the speaker.",
+  "author": { "name": "BigMo" },
+  "homepage": "https://github.com/BigMo202634/motion-studio",
+  "repository": "https://github.com/BigMo202634/motion-studio",
+  "keywords": ["video", "animation", "motion-graphics", "real-estate", "captions", "reels"]
+}

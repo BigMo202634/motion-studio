@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Nova launch (20s, 16:9, dark)</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0B0C10; --ink: #F4F4F0; --muted: #8E93A0; --accent: #8B6CFF; --accent-2: #B6FF4A; --red: #FF4D5E;
+    --card: #15171D; --line: rgba(255,255,255,.07);
+    --display: "Unbounded", "Inter", Arial, sans-serif;
+    --serif: "Instrument Serif", Georgia, serif;
+    --text: "Geist", "Inter", Arial, sans-serif;
+    --mono: "Geist Mono", "JetBrains Mono", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; color: var(--ink); font-family: var(--text); background: var(--bg); }
+  .abs { position: absolute; }
+  .grid { inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 80px 80px; mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 30%, transparent 75%); }
+  .blob { border-radius: 50%; filter: blur(120px); }
+  .scene { position: absolute; inset: 0; }
+  .center { left: 0; right: 0; text-align: center; }
+  .display { font: 800 118px/1.02 var(--display); letter-spacing: -0.03em; }
+  .serif { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--accent); }
+  .kicker { font: 500 30px/1 var(--mono); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .card { background: var(--card); border: 1px solid rgba(255,255,255,.08); border-radius: 32px; box-shadow: 0 40px 80px -30px rgba(0,0,0,.8); }
+  .glow { box-shadow: 0 0 120px -20px var(--accent); }
+
+  /* glitch layers */
+  .glitch { position: relative; display: inline-block; margin-left: 22px; }
+  .glitch .l { position: absolute; left: 0; top: 0; mix-blend-mode: screen; }
+  #s1-g .serif { font-size: 1.22em; line-height: .8; }
+  .glitch .r { color: #FF2E63; } .glitch .c { color: #00E5FF; }
+
+  /* phone */
+  .phone { width: 430px; height: 880px; border-radius: 64px; background: #050608; border: 12px solid #22252D; overflow: hidden; }
+  .notch { left: 50%; margin-left: -70px; top: 14px; width: 140px; height: 36px; background: #000; border-radius: 20px; }
+  .notif { left: 18px; width: 370px; height: 118px; border-radius: 28px; background: rgba(40,42,52,.92); border: 1px solid rgba(255,255,255,.08); padding: 20px 22px; display: flex; gap: 16px; align-items: center; }
+  .notif .ic { width: 64px; height: 64px; border-radius: 18px; background: var(--accent); flex: none; display: flex; align-items: center; justify-content: center; font: 800 34px/1 var(--display); color: #fff; }
+  .notif b { font: 700 24px/1.2 var(--text); display: block; }
+  .notif span { font: 500 21px/1.3 var(--text); color: #C8CBD4; }
+  .notif em { font-style: normal; color: var(--accent-2); font-weight: 700; }
+
+  /* bars */
+  .bar { bottom: 0; width: 64px; border-radius: 14px 14px 6px 6px; background: linear-gradient(180deg, var(--accent), #4B32C9); transform-origin: bottom; }
+  .bar.hi { background: linear-gradient(180deg, var(--accent-2), #6FB51E); }
+
+  .big-num { font: 800 260px/1 var(--display); letter-spacing: -0.05em; }
+  .pill { display: inline-flex; align-items: center; gap: 16px; padding: 22px 36px; border-radius: 999px; font: 700 40px/1 var(--text); }
+  .confetti { width: 18px; height: 30px; border-radius: 4px; }
+  .cta { background: var(--ink); color: #0B0C10; border-radius: 999px; padding: 30px 60px; font: 800 44px/1 var(--text); display: inline-block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="abs grid" id="grid"></div>
+  <div class="abs blob" id="b1" style="left:-200px; top:-200px; width:800px; height:800px; background:#5B3CFF; opacity:.45"></div>
+  <div class="abs blob" id="b2" style="left:1300px; top:500px; width:700px; height:700px; background:#2EC4FF; opacity:.25"></div>
+
+  <!-- 1. glitch hook -->
+  <div class="scene" id="s1">
+    <div class="abs center kicker" id="s1-k" style="top:340px">nova · instant payments</div>
+    <div class="abs center display" style="top:420px">
+      <div id="s1-a">Money moves</div>
+      <div id="s1-b">at the speed of <span class="glitch" id="s1-g"><span class="serif">now.</span><span class="l r serif" id="g-r">now.</span><span class="l c serif" id="g-c">now.</span></span></div>
+    </div>
+  </div>
+
+  <!-- 2. phone + notifications -->
+  <div class="scene" id="s2">
+    <div class="abs phone glow" id="phone" style="left:260px; top:100px">
+      <div class="abs notch"></div>
+      <div class="abs" style="left:0; right:0; top:90px; text-align:center; font:600 92px/1 var(--text); color:#fff" id="clock">9:41</div>
+      <div class="abs" style="left:0; right:0; top:200px; text-align:center; font:500 24px/1 var(--text); color:#9AA0AA">Thursday, 26 November</div>
+      <div class="abs notif" id="n1" style="top:300px"><div class="ic">N</div><div><b>Payment received</b><span><em>+$1,250.00</em> from Ada Studio</span></div></div>
+      <div class="abs notif" id="n2" style="top:432px"><div class="ic" style="background:#2EC4FF">N</div><div><b>Payment received</b><span><em>+$480.00</em> from Kemi &amp; Co</span></div></div>
+      <div class="abs notif" id="n3" style="top:564px"><div class="ic" style="background:var(--accent-2); color:#0B0C10">N</div><div><b>Payout sent</b><span>Arrived in <em>3 seconds</em></span></div></div>
+    </div>
+    <div class="abs" style="left:880px; top:330px; width:900px">
+      <div class="kicker" id="s2-k">no more waiting</div>
+      <div class="display" style="font-size:104px; margin-top:30px" id="s2-h">Get paid<br><span class="serif">instantly.</span></div>
+    </div>
+  </div>
+
+  <!-- 3. revenue counter + bars -->
+  <div class="scene" id="s3">
+    <div class="abs kicker" id="s3-k" style="left:160px; top:250px">revenue this month</div>
+    <div class="abs" id="s3-n" style="left:150px; top:330px; font:800 150px/1 var(--display); letter-spacing:-0.05em">$<span id="rev">0</span></div>
+    <div class="abs pill" id="s3-pill" style="left:160px; top:560px; background:rgba(182,255,74,.12); color:var(--accent-2)">▲ 212% vs last month</div>
+    <div class="abs card" id="chart" style="left:1180px; top:250px; width:600px; height:560px; padding:44px">
+      <div style="font:600 28px/1 var(--text); color:var(--muted)">Weekly volume</div>
+      <div class="abs" style="left:52px; right:52px; bottom:50px; height:400px" id="bars"></div>
+    </div>
+  </div>
+
+  <!-- 4. countdown -->
+  <div class="scene" id="s4">
+    <div class="abs center kicker" id="s4-k" style="top:250px">launching in</div>
+    <div class="abs center big-num" id="d3" style="top:350px">3</div>
+    <div class="abs center big-num" id="d2" style="top:350px">2</div>
+    <div class="abs center big-num" id="d1" style="top:350px; color:var(--accent)">1</div>
+  </div>
+
+  <!-- 5. before / after -->
+  <div class="scene" id="s5">
+    <div class="abs card" id="old" style="left:160px; top:300px; width:760px; height:420px; padding:56px">
+      <div class="kicker">your old bank</div>
+      <div style="font:800 96px/1.05 var(--display); margin-top:40px; color:#6B7080">3–5 days</div>
+      <div class="abs pill" id="x" style="right:40px; top:40px; background:rgba(255,77,94,.15); color:var(--red)">✕ slow</div>
+    </div>
+    <div class="abs card glow" id="new" style="left:1000px; top:300px; width:760px; height:420px; padding:56px; border-color:rgba(139,108,255,.5)">
+      <div class="kicker" style="color:var(--accent)">nova</div>
+      <div style="font:800 96px/1.05 var(--display); margin-top:40px">3 <span class="serif" style="font-size:110px">seconds</span></div>
+      <div class="abs pill" id="ok" style="right:40px; top:40px; background:rgba(182,255,74,.14); color:var(--accent-2)">✓ instant</div>
+    </div>
+  </div>
+
+  <!-- 6. logo + confetti -->
+  <div class="scene" id="s6">
+    <div class="abs" id="conf" style="inset:0"></div>
+    <div class="abs center" id="logo" style="top:330px; font:800 200px/1 var(--display); letter-spacing:-0.05em">nova<span style="color:var(--accent)">.</span></div>
+    <div class="abs center" id="tag" style="top:580px; font:400 64px/1 var(--serif); font-style:italic; color:#C8CBD4">money, at the speed of now</div>
+    <div class="abs center" id="cta" style="top:720px"><span class="cta">Open an account →</span></div>
+  </div>
+</div>
+
+<script src="../assets/motion.js"></script>
+<script>
+  MS.size(1920, 1080).fps(30).duration(20);
+  // seeded random so every render is identical
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
+  // build bars and confetti
+  const heights = [120, 170, 150, 230, 260, 310, 380];
+  const barsEl = document.getElementById('bars');
+  heights.forEach((h, i) => { const b = document.createElement('div'); b.className = 'abs bar' + (i === 6 ? ' hi' : ''); b.style.left = (i * 78) + 'px'; b.style.height = h + 'px'; barsEl.appendChild(b); });
+  const conf = document.getElementById('conf');
+  const colors = ['#8B6CFF', '#B6FF4A', '#2EC4FF', '#FF4D5E', '#F4F4F0'];
+  for (let i = 0; i < 70; i++) { const c = document.createElement('div'); c.className = 'abs confetti'; c.style.left = (960 + (rnd() - .5) * 200) + 'px'; c.style.top = '520px'; c.style.background = colors[i % colors.length]; conf.appendChild(c); }
+
+  const sceneIn = (id, at) => MS.set(id, { opacity: 0 }, 0).set(id, { opacity: 1 }, at);
+  const sceneOut = (id, at) => MS.to(id, { opacity: 0, scale: 1.04, blur: 14 }, at, .35, 'in');
+
+  // background life
+  MS.float('#b1', 40, 7).float('#b2', 30, 6, 0, null, .5);
+  [3, 7, 11, 14, 17].forEach((t, i) => MS.to(['#b1', '#b2'].map(s => document.querySelector(s)), { x: (i % 2 ? 1 : -1) * 120, scale: 1 + (i % 3) * .1 }, t - .2, 1.2, 'inOut'));
+  MS.fromTo('#grid', { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1 }, 0, 1.5, 'expoOut');
+
+  // ---------- 1. glitch hook (0–3) ----------
+  MS.fromTo('#s1-k', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, .1, .5);
+  MS.fromTo('#s1-a', { opacity: 0, y: 80, blur: 16 }, { opacity: 1, y: 0, blur: 0 }, .2, .7, 'expoOut');
+  MS.fromTo('#s1-b', { opacity: 0, y: 80, blur: 16 }, { opacity: 1, y: 0, blur: 0 }, .4, .7, 'expoOut');
+  // glitch burst on "now." at 1.0s: RGB layers jitter, word skews
+  MS.set(['#g-r', '#g-c'].map(s => document.querySelector(s)), { opacity: 0 }, 0);
+  [[1.0, 14, -10], [1.06, -18, 12], [1.12, 9, -6], [1.18, -5, 4], [1.26, 0, 0]].forEach(([t, dx, dy]) => {
+    MS.set('#g-r', { x: dx, y: dy * .4, opacity: dx ? .9 : 0 }, t).set('#g-c', { x: -dx, y: -dy * .4, opacity: dx ? .9 : 0 }, t);
+    MS.set('#s1-g', { skewX: dx * .8 }, t);
+  });
+  MS.cue(.15, 'whoosh/whoosh_dramatic', .6).cue(1.0, 'glitch/glitch_fx_9', .7).cue(1.02, 'impact/bass_drop', .6);
+  sceneOut('#s1', 2.75);
+
+  // ---------- 2. phone + notifications (3–7) ----------
+  sceneIn('#s2', 3);
+  MS.fromTo('#phone', { opacity: 0, y: 300, rotate: -8 }, { opacity: 1, y: 0, rotate: 0 }, 3.0, .9, 'expoOut');
+  MS.fromTo('#s2-k', { opacity: 0, x: 60 }, { opacity: 1, x: 0 }, 3.3, .5);
+  MS.fromTo('#s2-h', { opacity: 0, x: 120, blur: 12 }, { opacity: 1, x: 0, blur: 0 }, 3.4, .8, 'expoOut');
+  ['#n1', '#n2', '#n3'].forEach((id, i) => {
+    const t = 4.1 + i * .7;
+    MS.fromTo(id, { opacity: 0, y: -90, scale: .9 }, { opacity: 1, y: 0, scale: 1 }, t, .5, 'backOut');
+    MS.cue(t, i === 2 ? 'alert/success_chime_ui' : 'alert/notification_040', .55);
+  });
+  MS.to('#phone', { x: -8 }, 4.1, .05, 'linear').to('#phone', { x: 8 }, 4.15, .05, 'linear').to('#phone', { x: 0 }, 4.2, .1, 'out');
+  MS.cue(2.9, 'whoosh/swoosh_air', .6).cue(4.05, 'ui/phone_vibration', .45);
+  sceneOut('#s2', 6.75);
+
+  // ---------- 3. revenue counter + bars (7–11) ----------
+  sceneIn('#s3', 7);
+  MS.fromTo('#s3-k', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 7.05, .4);
+  MS.fromTo('#s3-n', { opacity: 0, y: 60 }, { opacity: 1, y: 0 }, 7.1, .6, 'expoOut');
+  MS.count('#rev', 0, 248930, 7.2, 2.2, 'expoOut');
+  MS.countSound(7.2, 2.2, 'expoOut', { ticks: 22, tick: 'counter/tick_checkbox', gain: .4, land: 'money/cash_register_kaching', landGain: .6 });
+  MS.cue(7.2, 'counter/cash_counting_machine', .25);
+  MS.fromTo('#s3-pill', { opacity: 0, scale: .7 }, { opacity: 1, scale: 1 }, 9.3, .5, 'backOut');
+  MS.fromTo('#chart', { opacity: 0, x: 160 }, { opacity: 1, x: 0 }, 7.3, .8, 'expoOut');
+  MS.stagger('#bars .bar', { scaleY: 0 }, { scaleY: 1 }, 7.8, .6, .12, 'backOut');
+  for (let i = 0; i < 7; i++) MS.cue(7.8 + i * .12, 'pop/pop_3', .25 + i * .03);
+  MS.to('#bars .bar.hi', { scaleY: 1.06 }, 9.0, .15, 'out').to('#bars .bar.hi', { scaleY: 1 }, 9.15, .3, 'out');
+  MS.cue(6.9, 'whoosh/swipe_quick', .6).cue(9.3, 'pop/bubble_pop_06', .5);
+  sceneOut('#s3', 10.75);
+
+  // ---------- 4. countdown (11–14) ----------
+  sceneIn('#s4', 11);
+  MS.fromTo('#s4-k', { opacity: 0 }, { opacity: 1 }, 11, .3);
+  ['#d3', '#d2', '#d1'].forEach((id, i) => {
+    const t = 11.1 + i * .8;
+    MS.fromTo(id, { opacity: 0, scale: 2.2, blur: 20 }, { opacity: 1, scale: 1, blur: 0 }, t, .35, 'expoOut');
+    MS.to(id, { opacity: 0, scale: .6, blur: 10 }, t + .6, .2, 'in');
+    MS.cue(t, 'timer/tick_clock_single', .9).cue(t, 'impact/impact_short_bass', .4);
+  });
+  MS.cue(12.9, 'riser/riser_cinematic_trailer', .5);
+  sceneOut('#s4', 13.7);
+
+  // ---------- 5. before / after (14–17) ----------
+  sceneIn('#s5', 14);
+  MS.fromTo('#old', { opacity: 0, x: -140 }, { opacity: 1, x: 0 }, 14.0, .6, 'expoOut');
+  MS.fromTo('#x', { opacity: 0, scale: .5 }, { opacity: 1, scale: 1 }, 14.5, .4, 'backOut');
+  MS.to('#old', { scale: .96, opacity: .55 }, 15.2, .5, 'inOut');
+  MS.fromTo('#new', { opacity: 0, x: 140, scale: .94 }, { opacity: 1, x: 0, scale: 1 }, 15.2, .6, 'backOut');
+  MS.fromTo('#ok', { opacity: 0, scale: .5 }, { opacity: 1, scale: 1 }, 15.7, .4, 'backOut');
+  MS.cue(13.9, 'whoosh/whoosh_simple', .6).cue(14.5, 'alert/error_notification', .5).cue(15.15, 'whoosh/swoosh_010', .6).cue(15.7, 'alert/success_vibraphone', .55);
+  sceneOut('#s5', 16.75);
+
+  // ---------- 6. logo + confetti (17–20) ----------
+  sceneIn('#s6', 17);
+  MS.fromTo('#logo', { opacity: 0, scale: .4, blur: 20 }, { opacity: 1, scale: 1, blur: 0 }, 17.05, .8, 'backOut');
+  MS.fromTo('#tag', { opacity: 0, y: 30 }, { opacity: 1, y: 0 }, 17.6, .6);
+  MS.fromTo('#cta', { opacity: 0, y: 60 }, { opacity: 1, y: 0 }, 17.9, .6, 'backOut');
+  MS.to('#cta', { scale: .93 }, 18.9, .1, 'out').to('#cta', { scale: 1 }, 19.0, .45, 'backOut');
+  document.querySelectorAll('#conf .confetti').forEach(el => {
+    const ang = rnd() * Math.PI * 2, dist = 500 + rnd() * 600, t0 = 17.1 + rnd() * .1;
+    const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist * .6 - 200;
+    MS.fromTo(el, { opacity: 1, x: 0, y: 0, rotate: 0, scale: .4 }, { x: dx, y: dy, rotate: (rnd() - .5) * 720, scale: 1 }, t0, .9, 'expoOut');
+    MS.to(el, { y: dy + 600, rotate: (rnd() - .5) * 1080, opacity: 0 }, t0 + .9, 2.0, 'in');
+  });
+  MS.cue(16.95, 'impact/whoosh_deep_bass_drop', .6).cue(17.1, 'crowd/confetti_gift', .6).cue(17.15, 'crowd/party_horn', .4)
+    .cue(17.4, 'crowd/applause_cheer', .25).cue(18.9, 'ui/click_select', .9).cue(18.95, 'alert/ding', .5);
+</script>
+</body>
+</html>

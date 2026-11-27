@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pulse promo (15s)</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+  :root {
+    --bg: #F3F1EC; --ink: #121212; --muted: #6B6862; --accent: #FF5A1F; --accent-soft: #FFE3D6;
+    --card: #FFFFFF; --line: #E6E2DA; --blue: #2F5BFF; --lime: #C8F04A;
+    --shadow: 0 30px 60px -20px rgba(30, 20, 10, .18), 0 8px 18px -8px rgba(30, 20, 10, .12);
+    --display: "Bricolage Grotesque", "Inter", "Helvetica Neue", Arial, sans-serif;
+    --text: "Geist", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: var(--text); color: var(--ink);
+    background: radial-gradient(1200px 900px at 50% 38%, #FFFFFF 0%, var(--bg) 60%, #E9E5DD 100%); }
+  .abs { position: absolute; }
+  .center-x { left: 0; right: 0; text-align: center; }
+
+  /* floating primitives */
+  .sphere { border-radius: 50%; }
+  .s-orange { background: radial-gradient(circle at 32% 30%, #FFB38F, var(--accent) 45%, #C93A0B 100%); }
+  .s-blue { background: radial-gradient(circle at 32% 30%, #8FA8FF, var(--blue) 50%, #14318F 100%); }
+  .s-white { background: radial-gradient(circle at 32% 30%, #FFFFFF, #E4E1DA 60%, #BDB8AE 100%); }
+  .s-black { background: radial-gradient(circle at 32% 30%, #6B6B6B, #161616 55%, #000 100%); }
+  .s-lime { background: radial-gradient(circle at 32% 30%, #EFFFB8, var(--lime) 50%, #8DB320 100%); }
+  .ring { border-radius: 50%; border: 14px solid var(--accent); opacity: .85; }
+  .cube { background: linear-gradient(135deg, #FF8A5C, var(--accent) 50%, #B8380E); border-radius: 10px; }
+  .shadow-blob { filter: blur(18px); background: rgba(40, 30, 20, .14); border-radius: 50%; }
+
+  /* type */
+  .kicker { font: 600 34px/1 var(--text); letter-spacing: .02em; color: var(--muted); }
+  .display { font: 900 128px/0.95 var(--display); letter-spacing: -0.045em; }
+  .display .hl { color: var(--accent); }
+  .word { display: inline-block; }
+  .ghost { font: 900 300px/1 var(--display); letter-spacing: -0.05em; color: rgba(18, 18, 18, .05); white-space: nowrap; }
+
+  /* caption pill (kinetic subtitles) */
+  .cap { position: absolute; left: 0; right: 0; bottom: 330px; display: flex; justify-content: center; }
+  .cap span.pill { background: rgba(18, 18, 18, .88); color: #fff; font: 700 46px/1.15 var(--text); padding: 20px 34px; border-radius: 22px; letter-spacing: -0.01em; }
+  .cap .hl { color: var(--accent); }
+
+  /* cards */
+  .card { background: var(--card); border-radius: 36px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,.04); }
+  .card h4 { font: 700 34px/1 var(--text); display: flex; align-items: center; gap: 14px; }
+  .card h4 i { width: 18px; height: 18px; border-radius: 6px; background: var(--accent); display: inline-block; }
+  .tag { font: 600 22px/1 "JetBrains Mono", monospace; color: var(--accent); background: var(--accent-soft); padding: 8px 14px; border-radius: 10px; }
+  .stat { font: 800 88px/1 var(--display); letter-spacing: -0.03em; }
+  .sub { font: 500 26px/1.3 var(--text); color: var(--muted); }
+  .chip { display: inline-flex; align-items: center; gap: 14px; background: #fff; border-radius: 999px; padding: 22px 34px; font: 700 38px/1 var(--text); box-shadow: var(--shadow); white-space: nowrap; }
+  .chip b { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  .btn { background: var(--ink); color: #fff; border-radius: 999px; padding: 34px 64px; font: 800 48px/1 var(--text); box-shadow: 0 24px 50px -16px rgba(0,0,0,.45); white-space: nowrap; }
+  .btn .arrow { color: var(--accent); }
+  .ms-caret { color: var(--accent); font-weight: 400; }
+  .scene { position: absolute; inset: 130px 0 -130px 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- persistent background objects -->
+  <div class="abs sphere s-orange obj" id="o1" style="left:90px; top:300px; width:120px; height:120px"></div>
+  <div class="abs sphere s-blue obj" id="o2" style="left:880px; top:560px; width:70px; height:70px"></div>
+  <div class="abs sphere s-white obj" id="o3" style="left:150px; top:1180px; width:96px; height:96px"></div>
+  <div class="abs sphere s-black obj" id="o4" style="left:-30px; top:820px; width:84px; height:84px"></div>
+  <div class="abs sphere s-lime obj" id="o5" style="left:930px; top:1220px; width:56px; height:56px"></div>
+  <div class="abs cube obj" id="o6" style="left:780px; top:250px; width:64px; height:64px; rotate:18deg"></div>
+  <div class="abs ring obj" id="o7" style="left:820px; top:1460px; width:150px; height:60px"></div>
+
+  <!-- SCENE 1: hook -->
+  <div class="scene" id="s1">
+    <div class="abs center-x ghost" id="s1-ghost" style="top:830px">LOUD</div>
+    <div class="abs center-x kicker" id="s1-kick" style="top:620px">for busy teams</div>
+    <div class="abs center-x display" style="top:700px">
+      <span class="word" id="w1">Your</span> <span class="word" id="w2">dashboard</span><br>
+      <span class="word" id="w3">is</span> <span class="word" id="w4">too</span> <span class="word hl" id="w5">loud.</span>
+    </div>
+  </div>
+
+  <!-- SCENE 2: cards -->
+  <div class="scene" id="s2">
+    <div class="abs center-x ghost" id="s2-ghost" style="top:640px">CALM</div>
+    <div class="abs card" id="c1" style="left:110px; top:420px; width:860px; height:440px; padding:48px">
+      <div style="display:flex; justify-content:space-between; align-items:center"><h4><i></i>Weekly signups</h4><span class="tag">live</span></div>
+      <svg width="764" height="260" viewBox="0 0 764 260" style="margin-top:36px">
+        <g stroke="#ECE8E1" stroke-width="2"><line x1="0" y1="60" x2="764" y2="60"/><line x1="0" y1="130" x2="764" y2="130"/><line x1="0" y1="200" x2="764" y2="200"/></g>
+        <g id="c1-line">
+          <path d="M0 220 C 80 210, 120 170, 190 175 S 300 120, 380 130 S 500 70, 570 80 S 700 20, 764 24" fill="none" stroke="#FF5A1F" stroke-width="8" stroke-linecap="round"/>
+          <path d="M0 220 C 80 210, 120 170, 190 175 S 300 120, 380 130 S 500 70, 570 80 S 700 20, 764 24 L764 260 L0 260Z" fill="url(#g1)"/>
+        </g>
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF5A1F" stop-opacity=".22"/><stop offset="1" stop-color="#FF5A1F" stop-opacity="0"/></linearGradient></defs>
+      </svg>
+    </div>
+    <div class="abs card" id="c2" style="left:110px; top:900px; width:410px; height:300px; padding:44px">
+      <div class="sub">Active users</div>
+      <div class="stat" style="margin-top:22px" id="c2-n">0</div>
+      <div class="sub" style="margin-top:14px; color:#1E9E5A">▲ 12% this week</div>
+    </div>
+    <div class="abs card" id="c3" style="left:560px; top:900px; width:410px; height:300px; padding:44px">
+      <div class="sub">Response time</div>
+      <div class="stat" style="margin-top:22px"><span id="c3-n">0</span><span style="font-size:48px">ms</span></div>
+      <div class="sub" style="margin-top:14px">p95, all regions</div>
+    </div>
+  </div>
+
+  <!-- SCENE 3: big stat -->
+  <div class="scene" id="s3">
+    <div class="abs center-x kicker" id="s3-kick" style="top:560px">teams on Pulse ship</div>
+    <div class="abs center-x" id="s3-num" style="top:640px; font:900 300px/1 var(--display); letter-spacing:-0.06em">+<span id="s3-n">0</span><span style="color:var(--accent)">%</span></div>
+    <div class="abs center-x kicker" id="s3-sub" style="top:980px; color:var(--ink)">faster, with half the noise</div>
+  </div>
+
+  <!-- SCENE 4: features + prompt -->
+  <div class="scene" id="s4">
+    <div class="abs" style="left:0; right:0; top:470px; display:flex; flex-direction:column; align-items:center; gap:34px">
+      <div class="chip f">One calm view <b></b></div>
+      <div class="chip f">Smart alerts only <b style="background:var(--blue)"></b></div>
+      <div class="chip f">Ask in plain English <b style="background:var(--lime)"></b></div>
+    </div>
+    <div class="abs card" id="s4-ask" style="left:110px; top:930px; width:860px; height:260px; padding:44px">
+      <div class="sub">Ask Pulse</div>
+      <div id="s4-type" style="font:600 46px/1.25 var(--text); margin-top:22px; letter-spacing:-0.01em"></div>
+    </div>
+  </div>
+
+  <!-- SCENE 5: CTA -->
+  <div class="scene" id="s5">
+    <div class="abs center-x" id="s5-logo" style="top:640px">
+      <div style="display:inline-flex; align-items:center; gap:30px; font:900 170px/1 var(--display); letter-spacing:-0.05em">
+        <span class="sphere s-orange" style="display:inline-block; width:130px; height:130px"></span>Pulse
+      </div>
+    </div>
+    <div class="abs center-x kicker" id="s5-sub" style="top:860px">the calm dashboard</div>
+    <div class="abs center-x" id="s5-btn" style="top:980px"><span class="btn" style="display:inline-block">Try it free <span class="arrow">→</span></span></div>
+  </div>
+
+  <!-- captions -->
+  <div class="cap" id="cap1"><span class="pill">Your dashboard is <span class="hl">too loud</span></span></div>
+  <div class="cap" id="cap2"><span class="pill">See only what <span class="hl">matters</span></span></div>
+  <div class="cap" id="cap3"><span class="pill">Ship <span class="hl">38% faster</span></span></div>
+  <div class="cap" id="cap4"><span class="pill">Just <span class="hl">ask</span></span></div>
+  <div class="cap" id="cap5"><span class="pill">Try Pulse <span class="hl">free</span></span></div>
+</div>
+
+<script src="../assets/motion.js"></script>
+<script>
+  MS.size(1080, 1920).fps(30).duration(15);
+  const IN = { opacity: 0, y: 60, blur: 12 }, SHOW = { opacity: 1, y: 0, blur: 0 };
+  const OUT = { opacity: 0, y: -50, blur: 10 };
+
+  // Captions: in with a pop, out with a quick fade. One per scene.
+  const caption = (id, a, b) => {
+    MS.fromTo(id, { opacity: 0, y: 30, scale: .92 }, { opacity: 1, y: 0, scale: 1 }, a, .35, 'backOut');
+    MS.to(id, { opacity: 0, y: -20 }, b - .25, .25, 'in');
+  };
+
+  // ---------- background objects: drift in, then float the whole time ----------
+  MS.stagger('.obj', { opacity: 0, scale: .3 }, { opacity: 1, scale: 1 }, 0.05, .7, .06, 'backOut');
+  MS.float('.obj', 16, 3.2);
+  // At scene changes, objects shift slightly (parallax) so the world feels continuous
+  [2.5, 6, 9, 12].forEach((t, i) => MS.to('.obj', { x: (i % 2 ? 1 : -1) * 24, rotate: (i % 2 ? 1 : -1) * 8 }, t, .9, 'inOut'));
+
+  // ---------- scene 1: hook (0 – 2.5s) ----------
+  MS.fromTo('#s1-kick', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, .1, .5);
+  MS.fromTo('#s1-ghost', { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1 }, 0, 1.2, 'expoOut');
+  MS.stagger(['#w1', '#w2', '#w3', '#w4'].map(s => document.querySelector(s)), { opacity: 0, y: 90, blur: 14 }, SHOW, .25, .55, .1, 'expoOut');
+  MS.fromTo('#w5', { opacity: 0, scale: 1.8, rotate: -6 }, { opacity: 1, scale: 1, rotate: 0 }, .85, .5, 'backOut');
+  MS.to('#w5', { skewX: -6 }, 1.0, .08, 'linear').to('#w5', { skewX: 6 }, 1.08, .08, 'linear').to('#w5', { skewX: 0 }, 1.16, .2, 'out');
+  caption('#cap1', .45, 2.5);
+  MS.to('#s1', OUT, 2.25, .35, 'in');
+  MS.cue(0.0, 'whoosh/whoosh_cinematic_fast', .7).cue(.85, 'impact/impact_quick_zoom', .9).cue(1.0, 'pop/pop_hard_click', .4);
+
+  // ---------- scene 2: cards (2.5 – 6s) ----------
+  MS.set('#s2', { opacity: 0 }, 0).set('#s2', { opacity: 1 }, 2.5);
+  MS.fromTo('#s2-ghost', { opacity: 0, x: 120 }, { opacity: 1, x: 0 }, 2.5, 1.4, 'expoOut');
+  MS.fromTo('#c1', { opacity: 0, y: 140, scale: .94, blur: 10 }, { opacity: 1, y: 0, scale: 1, blur: 0 }, 2.55, .7, 'expoOut');
+  MS.fromTo('#c1-line', { clip: 0 }, { clip: 1 }, 2.85, 1.3, 'inOut');
+  MS.stagger(['#c2', '#c3'].map(s => document.querySelector(s)), { opacity: 0, y: 120, scale: .9 }, { opacity: 1, y: 0, scale: 1 }, 2.95, .65, .14, 'backOut');
+  MS.count('#c2-n', 0, 12480, 3.1, 1.6, 'expoOut');
+  MS.count('#c3-n', 900, 182, 3.25, 1.6, 'expoOut');
+  MS.countSound(3.1, 1.6, 'expoOut', { ticks: 16, gain: .45, land: 'counter/point_smooth_beep', landGain: .5 });
+  caption('#cap2', 2.9, 6);
+  MS.to('#s2', { opacity: 0, scale: .94, blur: 12 }, 5.7, .35, 'in');
+  MS.cue(2.4, 'whoosh/swoosh_fast_transitions', .7).cue(2.95, 'pop/pop_message', .5).cue(3.09, 'pop/pop_dry', .45);
+
+  // ---------- scene 3: big stat (6 – 9s) ----------
+  MS.set('#s3', { opacity: 0 }, 0).set('#s3', { opacity: 1 }, 6);
+  MS.fromTo('#s3-kick', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 6.05, .5);
+  MS.fromTo('#s3-num', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1 }, 6.15, .7, 'backOut');
+  MS.count('#s3-n', 0, 38, 6.2, 1.5, 'expoOut');
+  MS.countSound(6.2, 1.5, 'expoOut', { ticks: 38, gain: .55, land: null });
+  MS.fromTo('#s3-sub', { opacity: 0, y: 30 }, { opacity: 1, y: 0 }, 6.9, .5);
+  MS.to('#s3-num', { scale: 1.04 }, 7.7, .15, 'out').to('#s3-num', { scale: 1 }, 7.85, .4, 'out');
+  caption('#cap3', 6.4, 9);
+  MS.to('#s3', OUT, 8.7, .35, 'in');
+  MS.cue(5.9, 'whoosh/sweep_fast_air', .7).cue(6.15, 'riser/riser_cinematic_trailer', .5).cue(7.7, 'ding/ding_correct_answer', .55);
+
+  // ---------- scene 4: features + typing (9 – 12s) ----------
+  MS.set('#s4', { opacity: 0 }, 0).set('#s4', { opacity: 1 }, 9);
+  MS.stagger('.f', { opacity: 0, x: -160, scale: .9 }, { opacity: 1, x: 0, scale: 1 }, 9.05, .55, .16, 'backOut');
+  MS.fromTo('#s4-ask', { opacity: 0, y: 100 }, { opacity: 1, y: 0 }, 9.6, .6, 'expoOut');
+  MS.type('#s4-type', 'Why did signups jump on Tuesday?', 10.0, 1.4);
+  caption('#cap4', 9.5, 12);
+  MS.to('#s4', OUT, 11.7, .35, 'in');
+  MS.cue(8.9, 'whoosh/tech_transition_slide', .7).cue(9.05, 'pop/pop_bubble_alert', .45).cue(9.21, 'pop/pop_bubble_alert', .45).cue(9.37, 'pop/pop_bubble_alert', .45);
+  for (let k = 0; k < 12; k++) MS.cue(10.0 + k * 0.115, k % 3 ? 'typing/type_single_key' : 'typing/type_key_press_laptop', .55);
+
+  // ---------- scene 5: CTA (12 – 15s) ----------
+  MS.set('#s5', { opacity: 0 }, 0).set('#s5', { opacity: 1 }, 12);
+  MS.fromTo('#s5-logo', { opacity: 0, scale: .5, blur: 16 }, { opacity: 1, scale: 1, blur: 0 }, 12.05, .8, 'backOut');
+  MS.fromTo('#s5-sub', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 12.5, .5);
+  MS.fromTo('#s5-btn', { opacity: 0, y: 60 }, { opacity: 1, y: 0 }, 12.75, .6, 'backOut');
+  MS.to('#s5-btn', { scale: .93 }, 13.7, .1, 'out').to('#s5-btn', { scale: 1 }, 13.8, .45, 'backOut');
+  caption('#cap5', 12.9, 15.4);
+  MS.cue(11.9, 'whoosh/swoosh_flying_fast', .7).cue(12.1, 'impact/impact_cinematic_deep_whoosh', .7).cue(13.7, 'ui/click_select', .9).cue(13.75, 'ding/success_software_tone', .5);
+</script>
+</body>
+</html>

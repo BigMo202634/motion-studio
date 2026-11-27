@@ -1,0 +1,255 @@
+[
+ {
+  "family": "Anton",
+  "kind": "static",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Archivo",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Archivo Black",
+  "kind": "static",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Bebas Neue",
+  "kind": "static",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Big Shoulders Display",
+  "kind": "variable",
+  "category": "display",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Bricolage Grotesque",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Caveat",
+  "kind": "variable",
+  "category": "handwriting",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "DM Sans",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "DM Serif Display",
+  "kind": "static",
+  "category": "serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Dela Gothic One",
+  "kind": "static",
+  "category": "display",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Familjen Grotesk",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Figtree",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Fraunces",
+  "kind": "variable",
+  "category": "serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Geist",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Geist Mono",
+  "kind": "variable",
+  "category": "monospace",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Hanken Grotesk",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Instrument Sans",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Instrument Serif",
+  "kind": "static",
+  "category": "serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Inter",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Inter Tight",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "JetBrains Mono",
+  "kind": "variable",
+  "category": "monospace",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Krona One",
+  "kind": "static",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Lexend",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Manrope",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Montserrat",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Nunito",
+  "kind": "static",
+  "category": "sans-serif",
+  "license": "OFL-1.1",
+  "weights": [
+   600,
+   700,
+   800,
+   900
+  ],
+  "note": "rounded heavy; luxe real-estate keyword captions"
+ },
+ {
+  "family": "Onest",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Oswald",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Outfit",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Permanent Marker",
+  "kind": "static",
+  "category": "handwriting",
+  "license": "Apache-2.0"
+ },
+ {
+  "family": "Playfair Display",
+  "kind": "variable",
+  "category": "serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Plus Jakarta Sans",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Poppins",
+  "kind": "static",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Rubik",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Schibsted Grotesk",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Sora",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Space Grotesk",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Space Mono",
+  "kind": "static",
+  "category": "monospace",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Syne",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Unbounded",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ },
+ {
+  "family": "Urbanist",
+  "kind": "variable",
+  "category": "sans-serif",
+  "license": "OFL-1.1"
+ }
+]

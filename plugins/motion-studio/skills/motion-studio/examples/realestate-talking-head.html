@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Real estate talking head (luxe keyword captions)</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<!--
+  DEFAULT REAL ESTATE TEMPLATE (overlay on real footage). The look: one big rounded keyword at a time,
+  in lime, sitting BEHIND the agent (their head and shoulders pass in front of it), small white words for
+  context, a framed agent portrait, clean white cards, and a "calling..." phone pill as the CTA.
+
+    python3 scripts/transcribe.py talking.mp4 words.js        # word timings -> words.js
+    python3 scripts/matte.py talking.mp4 cutout                # the agent cut out of every frame -> cutout/
+    node scripts/render.mjs realestate-talking-head.html --background talking.mp4
+
+  No cutout folder? It still works: the keywords just sit in front of the agent instead of behind.
+  Edit only the AGENT / LISTING / MOMENTS block below.
+-->
+<style>
+  :root {
+    --accent: #CDEB5E;            /* the lime keyword colour */
+    --ink: #FFFFFF; --card: #FFFFFF; --card-ink: #15161A; --muted: #6B6E76;
+    --kw: "Nunito", "Plus Jakarta Sans", Arial, sans-serif;
+    --text: "Nunito", "Plus Jakarta Sans", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #111; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: var(--ink); font-family: var(--text); }
+  .abs { position: absolute; }
+  #bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  /* light legibility shade only where the small words and cards sit */
+  .shade-top { left: 0; right: 0; top: 0; height: 420px; background: linear-gradient(180deg, rgba(0,0,0,.28), transparent); }
+  .shade-bot { left: 0; right: 0; bottom: 0; height: 820px; background: linear-gradient(0deg, rgba(0,0,0,.45), transparent); }
+
+  /* ---- layer 1: big keywords, behind the agent ---- */
+  .ms-behind { left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }   /* no z-index on purpose */
+  .ms-kw { position: absolute; left: 0; right: 0; top: 150px; z-index: 1; text-align: center; white-space: nowrap;
+    font: 900 260px/1 var(--kw); letter-spacing: -0.035em; color: var(--accent);
+    text-shadow: 0 6px 40px rgba(0,0,0,.18); }
+  /* when the agent's head fills the frame the word comes in front (MS.keywords decides, using cutout/cover.js) */
+  .ms-kw.front { text-shadow: 0 4px 10px rgba(0,0,0,.25), 0 14px 50px rgba(0,0,0,.35); }
+  /* ---- layer 2: the agent, cut out of the footage (scripts/matte.py) ---- */
+  #cutout { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; z-index: 2; pointer-events: none; }
+  /* ---- layer 3: everything else ---- */
+  .front { z-index: 3; }
+
+  /* small context words (what they are saying), white */
+  #caps { left: 60px; right: 60px; top: 82px; height: 80px; }
+  .ms-cap { text-align: center; font: 800 50px/1.1 var(--text); letter-spacing: -0.005em; color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,.35), 0 6px 24px rgba(0,0,0,.35); }
+  .ms-w { opacity: .55; } .ms-w.now, .ms-w.said { opacity: 1; }
+
+  /* framed agent portrait */
+  .portrait { width: 330px; padding: 16px 16px 22px; background: var(--card); border-radius: 26px; box-shadow: 0 30px 60px -18px rgba(0,0,0,.55); color: var(--card-ink); position: relative; }
+  .portrait .ph { width: 298px; height: 340px; border-radius: 16px; background: #ddd center/cover; }
+  .portrait b { display: block; font: 900 34px/1.1 var(--text); margin-top: 16px; letter-spacing: -0.01em; }
+  .portrait span { display: block; font: 700 22px/1.25 var(--text); color: var(--muted); margin-top: 4px; }
+  .portrait i { position: absolute; right: -14px; top: -14px; font-style: normal; background: var(--accent); color: #1B1F0A;
+    font: 900 22px/1 var(--text); padding: 12px 16px; border-radius: 999px; letter-spacing: .06em; box-shadow: 0 10px 20px rgba(0,0,0,.25); }
+
+  /* price + specs */
+  .price { padding: 26px 40px 30px; border-radius: 30px; background: var(--card); color: var(--card-ink); box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); }
+  .price small { display: inline-block; font: 900 22px/1 var(--text); letter-spacing: .12em; text-transform: uppercase; background: var(--accent); color: #1B1F0A; padding: 10px 14px; border-radius: 10px; }
+  .price b { display: block; font: 900 104px/1.02 var(--text); letter-spacing: -0.035em; margin-top: 14px; }
+  .chip { display: inline-flex; align-items: center; gap: 12px; background: rgba(20,21,26,.78); color: #fff; border-radius: 999px; padding: 20px 30px; font: 900 36px/1 var(--text); box-shadow: 0 20px 40px -14px rgba(0,0,0,.5); backdrop-filter: blur(8px); }
+  .chip i { font-style: normal; color: var(--accent); font-weight: 800; }
+
+  /* photo card */
+  .photo { width: 860px; height: 600px; border-radius: 36px; overflow: hidden; box-shadow: 0 40px 80px -20px rgba(0,0,0,.6); border: 8px solid #fff; background: #333; }
+  .photo .img { position: absolute; inset: -40px; background-size: cover; background-position: center; }
+  .photo .label { left: 24px; bottom: 24px; padding: 14px 22px; border-radius: 16px; background: #fff; color: var(--card-ink); font: 900 30px/1 var(--text); }
+  .photo .label::before { content: ''; display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); margin-right: 12px; vertical-align: 3px; }
+
+  /* map */
+  .map { width: 860px; height: 420px; border-radius: 36px; overflow: hidden; background: #EEECE6; box-shadow: 0 40px 80px -20px rgba(0,0,0,.6); border: 8px solid #fff; }
+  .road { position: absolute; background: #fff; }
+  .park { position: absolute; background: #D7EDB5; border-radius: 30px; }
+  .water { position: absolute; background: #BFD9EE; }
+  .pin { width: 70px; height: 70px; border-radius: 50% 50% 50% 0; background: #15161A; rotate: -45deg; box-shadow: 0 10px 20px rgba(0,0,0,.3); }
+  .pin::after { content: ''; position: absolute; left: 21px; top: 21px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); }
+  .addr { left: 24px; right: 24px; padding: 22px 28px; background: #fff; border-radius: 22px; color: var(--card-ink); box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+  .addr b { font: 900 34px/1.1 var(--text); display: block; }
+  .addr span { font: 700 26px/1.2 var(--text); color: var(--muted); }
+
+  /* CTA: "calling," + phone pill */
+  .calling { font: 800 46px/1 var(--text); color: #fff; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,.35), 0 6px 24px rgba(0,0,0,.35); }
+  .call { display: flex; align-items: center; gap: 22px; padding: 18px; background: rgba(24,25,30,.86); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 30px 60px -18px rgba(0,0,0,.6); width: 820px; }
+  .call .av { width: 104px; height: 104px; border-radius: 50%; background: #ccc center/cover; flex: none; }
+  .call .who { flex: 1; }
+  .call .who b { display: block; font: 900 40px/1.1 var(--text); color: #fff; }
+  .call .who span { display: block; font: 700 24px/1.2 var(--text); color: #A9ACB4; margin-top: 4px; }
+  .btn { width: 104px; height: 104px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; }
+  .btn svg { width: 50px; height: 50px; fill: #fff; }
+  .btn.no { background: #FF453A; } .btn.no svg { rotate: 135deg; }
+  .btn.yes { background: #32D74B; }
+  .tip { font: 800 34px/1.2 var(--text); color: #fff; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,.4), 0 6px 24px rgba(0,0,0,.35); }
+  .tip em { font-style: normal; color: var(--accent); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <video id="bg" class="preview-only" src="talking.mp4" playsinline muted></video>
+  <div class="abs shade-top" id="shadeT"></div>
+  <div class="abs shade-bot" id="shadeB"></div>
+
+  <!-- 1: keywords behind the agent -->
+  <div class="abs ms-behind" id="kw"></div>
+  <!-- 2: the agent (cut out). Hidden automatically if the cutout folder is missing -->
+  <img id="cutout" alt="">
+
+  <!-- 3: everything in front -->
+  <div class="abs front" id="caps"></div>
+
+  <div class="abs front" id="portrait" style="left:70px; top:1180px"><div class="portrait"><i>JUST LISTED</i><div class="ph" id="pPh"></div><b id="aName"></b><span id="aRole"></span></div></div>
+
+  <div class="abs front" id="priceBox" style="left:110px; top:1250px"><div class="price"><small>Listed at</small><b id="priceN">$0</b></div></div>
+  <div class="abs front" id="specs" style="left:110px; top:1550px; display:flex; gap:18px; flex-wrap:wrap; width:880px"></div>
+
+  <div class="abs photo front" id="ph1" style="left:110px; top:1190px"><div class="img" id="ph1i"></div><div class="abs label" id="ph1l"></div></div>
+  <div class="abs photo front" id="ph2" style="left:110px; top:1190px"><div class="img" id="ph2i"></div><div class="abs label" id="ph2l"></div></div>
+  <div class="abs photo front" id="ph3" style="left:110px; top:1190px"><div class="img" id="ph3i"></div><div class="abs label" id="ph3l"></div></div>
+
+  <div class="abs map front" id="map" style="left:110px; top:1240px">
+    <div class="water" style="left:-40px; top:300px; width:960px; height:160px; rotate:-6deg"></div>
+    <div class="park" style="left:520px; top:40px; width:260px; height:150px"></div>
+    <div class="road" style="left:0; top:150px; width:860px; height:26px"></div>
+    <div class="road" style="left:300px; top:0; width:26px; height:420px"></div>
+    <div class="road" style="left:620px; top:0; width:18px; height:300px"></div>
+    <div class="road" style="left:0; top:250px; width:860px; height:14px; rotate:4deg"></div>
+    <div class="abs" id="pinW" style="left:395px; top:62px"><div class="pin"></div></div>
+    <div class="abs addr" id="addr" style="top:270px"><b id="addrL1"></b><span id="addrL2"></span></div>
+  </div>
+
+  <div class="abs front" id="ctaBox" style="left:130px; top:1290px; width:820px">
+    <div class="calling" id="callT" style="margin-bottom:26px">calling,</div>
+    <div class="call" id="callPill">
+      <div class="av" id="cAv"></div>
+      <div class="who"><b id="cName"></b><span id="cSub"></span></div>
+      <div class="btn no"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/></svg></div>
+      <div class="btn yes" id="yes"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/></svg></div>
+    </div>
+    <div class="tip" id="tip" style="margin-top:30px"></div>
+  </div>
+</div>
+
+<script src="words.js" onerror="window.WORDS = window.WORDS || []"></script>
+<script src="cutout/cover.js" onerror="window.MS_COVER = null"></script>
+<script src="../assets/motion.js"></script>
+<script>
+  /* ===================== EDIT THIS BLOCK ===================== */
+  const AGENT   = { name: 'Amara Cole', role: 'Realtor · Coastline Realty', photo: 'agent.jpg', phone: 'mobile · tap to book a tour' };
+  const LISTING = {
+    price: 1250000, currency: '$',
+    specs: [['4', 'Beds'], ['3', 'Baths'], ['2,450', 'sq ft'], ['2', 'Car garage']],
+    address: ['14 Harbor View Drive', 'Seaview Estate · 8 min to downtown'],
+    photos: [['house2.jpg', 'Open-plan living'], ['house3.jpg', 'Chef’s kitchen'], ['house4.jpg', 'Primary suite']],
+    tip: 'Comment <em>TOUR</em> for the full walkthrough',
+  };
+  // The big lime words: pick the words that sell (rooms, features, the price, the area). One per 1–3 s.
+  // Each appears the moment it is spoken. For a word the agent does not say, use objects: [{ text: 'Waterfront', at: 3.7 }]
+  const KEYWORDS = ['listed', 'modern', 'water', 'million', 'living', 'kitchen', 'view', 'tour'];
+  // When each overlay appears (seconds into the footage). Cards live in the lower half (y 1180–1800).
+  const MOMENTS = { agent: [0.5, 4.1], price: [4.3, 6.5], specs: [5.0, 6.5], photos: [6.6, 8.5, 10.1], photoEnd: 11.9, map: [12.0, 13.5], cta: 13.6 };
+  const SMALL_CAPTIONS = true;   // small white words at the top (what they are saying)
+  /* =========================================================== */
+
+  MS.size(1080, 1920).fps(30).duration('auto');
+  MS.footage('#bg');
+  MS.cutout('#cutout', 'cutout');
+  const $ = id => document.getElementById(id);
+  $('pPh').style.backgroundImage = `url("${AGENT.photo}")`; $('cAv').style.backgroundImage = `url("${AGENT.photo}")`;
+  $('aName').textContent = AGENT.name; $('aRole').textContent = AGENT.role;
+  $('cName').textContent = AGENT.name; $('cSub').textContent = AGENT.phone;
+  LISTING.specs.forEach(([n, l]) => { const c = document.createElement('div'); c.className = 'chip spec'; c.innerHTML = `${n} <i>${l}</i>`; $('specs').appendChild(c); });
+  $('addrL1').textContent = LISTING.address[0]; $('addrL2').textContent = LISTING.address[1];
+  LISTING.photos.forEach(([src, label], i) => { $(`ph${i + 1}i`).style.backgroundImage = `url("${src}")`; $(`ph${i + 1}l`).textContent = label; });
+  $('tip').innerHTML = LISTING.tip;
+
+  const outDown = (id, at) => MS.to(id, { opacity: 0, y: 40, blur: 8 }, at - .3, .3, 'in');
+  MS.fromTo(['#shadeT', '#shadeB'].map(s => document.querySelector(s)), { opacity: 0 }, { opacity: 1 }, 0, .4);
+
+  // ---- big keywords behind the agent (a quiet soft whoosh under each) ----
+  MS.keywords('#kw', window.WORDS, { pick: KEYWORDS, hold: 1.7, fit: 980, tops: [150, 300], frontAbove: 0.3 });
+  let kwN = 0, kwLast = -9;
+  (window.WORDS || []).forEach(w => {
+    const c = w.text.toLowerCase().replace(/[^a-z0-9$%]/g, '');
+    if (KEYWORDS.includes(c) && w.start - kwLast > .6) { MS.cue(w.start - .08, kwN++ % 2 ? 'whoosh/swoosh_quick_accent' : 'whoosh/sweep_short', .3); kwLast = w.start; }
+  });
+
+  // ---- small context words ----
+  if (SMALL_CAPTIONS) MS.captions('#caps', window.WORDS, { maxWords: 3, style: 'soft' });
+
+  // ---- framed agent portrait ----
+  const [a0, a1] = MOMENTS.agent;
+  MS.fromTo('#portrait', { opacity: 0, y: 120, rotate: 6, scale: .9 }, { opacity: 1, y: 0, rotate: -4, scale: 1 }, a0, .7, 'backOut');
+  MS.to('#portrait', { opacity: 0, x: -380, rotate: -10 }, a1 - .4, .4, 'in');
+  MS.cue(a0 + .1, 'pop/pop_dry', .35);
+
+  // ---- price counter + specs ----
+  const [p0, p1] = MOMENTS.price;
+  MS.fromTo('#priceBox', { opacity: 0, y: 60, scale: .9 }, { opacity: 1, y: 0, scale: 1 }, p0, .55, 'backOut');
+  MS.count('#priceN', 0, LISTING.price, p0 + .15, 1.6, 'expoOut', v => LISTING.currency + Math.round(v).toLocaleString());
+  MS.countSound(p0 + .15, 1.6, 'expoOut', { ticks: 18, tick: 'counter/tick_checkbox', gain: .38, land: 'money/cash_register_kaching', landGain: .5 });
+  outDown('#priceBox', p1);
+  const [s0, s1] = MOMENTS.specs;
+  MS.stagger('#specs .spec', { opacity: 0, y: 40, scale: .8 }, { opacity: 1, y: 0, scale: 1 }, s0, .45, .14, 'backOut');
+  LISTING.specs.forEach((_, i) => MS.cue(s0 + i * .14, i % 2 ? 'pop/pop_dry' : 'pop/pop_message', .3));
+  outDown('#specs', s1);
+
+  // ---- photo cards ----
+  MOMENTS.photos.forEach((t, i) => {
+    const id = `#ph${i + 1}`, end = MOMENTS.photos[i + 1] ?? MOMENTS.photoEnd;
+    MS.fromTo(id, { opacity: 0, x: 900, rotate: 6 }, { opacity: 1, x: 0, rotate: i % 2 ? 2 : -2 }, t, .65, 'expoOut');
+    MS.fromTo(`${id}i`, { scale: 1.0, x: 0 }, { scale: 1.12, x: i % 2 ? 20 : -20 }, t, end - t + .6, 'linear');
+    MS.to(id, { opacity: 0, x: -900, rotate: -6 }, end - .05, .5, 'in');
+    MS.cue(t + .4, 'camera/camera_shutter_click', .28);
+  });
+
+  // ---- map + pin drop ----
+  const [m0, m1] = MOMENTS.map;
+  MS.fromTo('#map', { opacity: 0, y: 80, scale: .92 }, { opacity: 1, y: 0, scale: 1 }, m0, .6, 'expoOut');
+  MS.fromTo('#pinW', { opacity: 0, y: -260 }, { opacity: 1, y: 0 }, m0 + .45, .55, 'backOut');
+  MS.fromTo('#addr', { opacity: 0, y: 30 }, { opacity: 1, y: 0 }, m0 + .7, .5, 'expoOut');
+  outDown('#map', m1);
+  MS.cue(m0 + .95, 'pop/pop_hard_click', .45);
+
+  // ---- CTA: "calling," + phone pill, green button pulses ----
+  const c0 = MOMENTS.cta;
+  MS.fromTo('#callT', { opacity: 0, y: 24, blur: 8 }, { opacity: 1, y: 0, blur: 0 }, c0, .45, 'expoOut');
+  MS.fromTo('#callPill', { opacity: 0, y: 70, scale: .9 }, { opacity: 1, y: 0, scale: 1 }, c0 + .15, .6, 'backOut');
+  MS.fromTo('#tip', { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, c0 + .7, .5, 'expoOut');
+  for (let k = 0; k < 4; k++) {
+    MS.to('#yes', { scale: 1.12 }, c0 + .9 + k * .8, .2, 'out').to('#yes', { scale: 1 }, c0 + 1.1 + k * .8, .45, 'backOut');
+  }
+  MS.cue(c0 + .5, 'ui/phone_vibration', .45);
+</script>
+</body>
+</html>

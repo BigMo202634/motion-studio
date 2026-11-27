@@ -1,0 +1,9 @@
+# Sound files are downloaded per user (licence forbids redistributing them)
+*.mp3
+*.wav
+node_modules/
+__pycache__/
+cutout/
+*-checks/
+dist/
+.DS_Store
